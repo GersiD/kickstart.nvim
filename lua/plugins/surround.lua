@@ -22,20 +22,4 @@ return {
       },
     },
   },
-  {
-    "echasnovski/mini.surround",
-    enabled = false,
-    opts = {
-      mappings = {
-        add = "s",
-        delete = "ds",
-        find = "sf",
-        find_left = "sF",
-        highlight = "sh",
-        replace = "rs",
-        update_n_lines = "gsn",
-      },
-      silent = true,
-    },
-  },
 }
