@@ -13,6 +13,10 @@ return {
     end,
   },
   {
+    -- Theme inspired by Atom
+    'navarasu/onedark.nvim',
+  },
+  {
     "rebelot/kanagawa.nvim",
     opts = {
       compile = false, -- enable compiling the colorscheme
@@ -117,13 +121,5 @@ return {
         },
       }
     end,
-  },
-  -- Set LazyVim ColorScheme
-  {
-    "LazyVim/LazyVim",
-    opts = {
-      ---@type string|fun()
-      colorscheme = "catppuccin",
-    },
   },
 }
