@@ -2,12 +2,12 @@ return {
   'neovim/nvim-lspconfig',
   dependencies = {
     -- Automatically install LSPs to stdpath for neovim
-    { 'williamboman/mason.nvim',           opts = {} },
+    { 'williamboman/mason.nvim', opts = {} },
     { 'williamboman/mason-lspconfig.nvim', opts = {} },
 
     -- Useful status updates for LSP
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-    { 'j-hui/fidget.nvim',                 tag = 'legacy', opts = {} },
+    { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
 
     -- Additional lua configuration, makes nvim stuff amazing!
     'folke/neodev.nvim',
@@ -92,7 +92,7 @@ return {
     end
 
     local capabilities =
-        vim.tbl_deep_extend('force', vim.lsp.protocol.make_client_capabilities(), cmp_nvim_lsp.default_capabilities())
+      vim.tbl_deep_extend('force', vim.lsp.protocol.make_client_capabilities(), cmp_nvim_lsp.default_capabilities())
 
     capabilities.offsetEncoding = { 'utf-16' }
 
