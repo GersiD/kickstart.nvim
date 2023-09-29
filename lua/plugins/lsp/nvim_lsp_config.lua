@@ -1,25 +1,24 @@
 return {
-  "neovim/nvim-lspconfig",
+  'neovim/nvim-lspconfig',
   dependencies = {
     -- Automatically install LSPs to stdpath for neovim
-    { "williamboman/mason.nvim", opts = {} },
-    { "williamboman/mason-lspconfig.nvim", opts = {} },
+    { 'williamboman/mason.nvim',           opts = {} },
+    { 'williamboman/mason-lspconfig.nvim', opts = {} },
 
     -- Useful status updates for LSP
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-    { "j-hui/fidget.nvim", tag = "legacy", opts = {} },
+    { 'j-hui/fidget.nvim',                 tag = 'legacy', opts = {} },
 
     -- Additional lua configuration, makes nvim stuff amazing!
-    "folke/neodev.nvim",
-    "SmiteshP/nvim-navic",
+    'folke/neodev.nvim',
   },
   config = function()
     -- Switch for controlling whether you want autoformatting.
     --  Use :KickstartFormatToggle to toggle autoformatting on or off
     local format_is_enabled = true
-    vim.api.nvim_create_user_command("KickstartFormatToggle", function()
+    vim.api.nvim_create_user_command('KickstartFormatToggle', function()
       format_is_enabled = not format_is_enabled
-      print("AutoFormat = " .. tostring(format_is_enabled))
+      print('AutoFormat = ' .. tostring(format_is_enabled))
     end, {})
 
     -- Create an augroup that is used for managing our formatting autocmds.
@@ -28,7 +27,7 @@ return {
     local _augroups = {}
     local get_augroup = function(client)
       if not _augroups[client.id] then
-        local group_name = "kickstart-lsp-format-" .. client.name
+        local group_name = 'kickstart-lsp-format-' .. client.name
         local id = vim.api.nvim_create_augroup(group_name, { clear = true })
         _augroups[client.id] = id
       end
@@ -39,8 +38,8 @@ return {
     -- Whenever an LSP attaches to a buffer, we will run this function.
     --
     -- See `:help LspAttach` for more information about this autocmd event.
-    vim.api.nvim_create_autocmd("LspAttach", {
-      group = vim.api.nvim_create_augroup("kickstart-lsp-attach-format", { clear = true }),
+    vim.api.nvim_create_autocmd('LspAttach', {
+      group = vim.api.nvim_create_augroup('kickstart-lsp-attach-format', { clear = true }),
       -- This is where we attach the autoformatting for reasonable clients
       callback = function(args)
         local client_id = args.data.client_id
@@ -54,13 +53,13 @@ return {
 
         -- Tsserver usually works poorly. Sorry you work with bad languages
         -- You can remove this line if you know what you're doing :)
-        if client.name == "tsserver" then
+        if client.name == 'tsserver' then
           return
         end
 
         -- Create an autocmd that will run *before* we save the buffer.
         --  Run the formatting command for the LSP that has just attached.
-        vim.api.nvim_create_autocmd("BufWritePre", {
+        vim.api.nvim_create_autocmd('BufWritePre', {
           group = get_augroup(client),
           buffer = bufnr,
           callback = function()
@@ -78,24 +77,24 @@ return {
         })
       end,
     })
-    local lspconfig = require("lspconfig")
-    local cmp_nvim_lsp = require("cmp_nvim_lsp")
-    local navic = pcall(require, "nvim-navic")
+    local lspconfig = require('lspconfig')
+    local cmp_nvim_lsp = require('cmp_nvim_lsp')
+    -- local navic = require("nvim-navic")
 
     local on_attach = function(client, bufnr)
       -- Navic
-      if client.server_capabilities.documentSymbolProvider then
-        navic.attach(client, bufnr)
-      end
+      -- if client.server_capabilities.documentSymbolProvider then
+      --   navic.attach(client, bufnr)
+      -- end
       if client.server_capabilities.inlayHintProvider then
         vim.lsp.inlay_hint(bufnr, true)
       end
     end
 
     local capabilities =
-      vim.tbl_deep_extend("force", vim.lsp.protocol.make_client_capabilities(), cmp_nvim_lsp.default_capabilities())
+        vim.tbl_deep_extend('force', vim.lsp.protocol.make_client_capabilities(), cmp_nvim_lsp.default_capabilities())
 
-    capabilities.offsetEncoding = { "utf-16" }
+    capabilities.offsetEncoding = { 'utf-16' }
 
     vim.diagnostic.config({
       virtual_text = false,
@@ -106,25 +105,25 @@ return {
     })
 
     -- Change the Diagnostic symbols
-    local signs = { Error = " ", Warn = " ", Hint = "🚥", Info = " ", Question = " " }
+    local signs = { Error = ' ', Warn = ' ', Hint = '🚥', Info = ' ', Question = ' ' }
 
     for type, icon in pairs(signs) do
-      local hl = "DiagnosticSign" .. type
+      local hl = 'DiagnosticSign' .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
     end
 
     -- CONFIGS
     local all_lsp = {
-      "cssls",
-      "html",
-      "tsserver",
-      "tailwindcss",
-      "vuels",
-      "eslint",
-      "pyright",
-      "emmet_ls",
-      "jsonls",
-      "vimls",
+      -- 'cssls',
+      'html',
+      -- 'tsserver',
+      -- "tailwindcss",
+      -- 'vuels',
+      'eslint',
+      'pyright',
+      'emmet_ls',
+      'jsonls',
+      'vimls',
     }
     for _, lsp in ipairs(all_lsp) do
       lspconfig[lsp].setup({
@@ -135,7 +134,7 @@ return {
 
     lspconfig.clangd.setup({
       on_attach = on_attach,
-      capabilities = vim.tbl_deep_extend("keep", { offsetEncoding = { "utf-16", "utf-8" } }, capabilities),
+      capabilities = vim.tbl_deep_extend('keep', { offsetEncoding = { 'utf-16', 'utf-8' } }, capabilities),
     })
   end,
 }
