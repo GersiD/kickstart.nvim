@@ -59,6 +59,10 @@ return {
               removed = icons.git.removed,
             },
           },
+        },
+        lualine_y = {
+          -- { 'progress', separator = ' ',                  padding = { left = 1, right = 0 } },
+          -- { 'location', padding = { left = 0, right = 1 } },
           {
             function()
               local msg = ''
@@ -75,17 +79,13 @@ return {
               end
               return msg
             end,
-            icon = ' ',
+            -- icon = ' ',
             color = Util.fg('LspInlayHint'),
           },
         },
-        lualine_y = {
-          { 'progress', separator = ' ',                  padding = { left = 1, right = 0 } },
-          { 'location', padding = { left = 0, right = 1 } },
-        },
         lualine_z = {
           function()
-            return ' ' .. os.date('%R')
+            return '' .. os.date('%R')
           end,
         },
       },
