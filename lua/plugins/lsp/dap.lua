@@ -10,28 +10,6 @@ return {
     -- fancy UI for the debugger
     {
       'rcarriga/nvim-dap-ui',
-      -- stylua: ignore
-      keys = {
-        { "<leader>du", function() require("dapui").toggle({}) end, desc = "Dap UI" },
-        { "<leader>de", function() require("dapui").eval() end,     desc = "Eval",  mode = { "n", "v" } },
-      },
-      opts = {},
-      config = function(_, opts)
-        -- setup dap config by VsCode launch.json file
-        -- require("dap.ext.vscode").load_launchjs()
-        local dap = require('dap')
-        local dapui = require('dapui')
-        dapui.setup(opts)
-        dap.listeners.after.event_initialized['dapui_config'] = function()
-          dapui.open({})
-        end
-        dap.listeners.before.event_terminated['dapui_config'] = function()
-          dapui.close({})
-        end
-        dap.listeners.before.event_exited['dapui_config'] = function()
-          dapui.close({})
-        end
-      end,
     },
 
     -- virtual text for the debugger
@@ -91,7 +69,6 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
       },
     })
 
@@ -105,36 +82,18 @@ return {
       dap.set_breakpoint(vim.fn.input('Breakpoint condition: '))
     end, { desc = 'Debug: Set Breakpoint' })
 
-    -- Dap UI setup
-    -- For more information, see |:help nvim-dap-ui|
-    dapui.setup({
-      -- Set icons to characters that are more likely to work in every terminal.
-      --    Feel free to remove or use ones that you like more! :)
-      --    Don't feel like these are good choices.
-      icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-      controls = {
-        icons = {
-          pause = '⏸',
-          play = '▶',
-          step_into = '⏎',
-          step_over = '⏭',
-          step_out = '⏮',
-          step_back = 'b',
-          run_last = '▶▶',
-          terminate = '⏹',
-          disconnect = '⏏',
-        },
-      },
-    })
-
-    -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-    vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
-
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
     vim.api.nvim_set_hl(0, 'DapStoppedLine', { default = true, link = 'Visual' })
-
+    local dap_icons = require('config.icons').dap
+    for name, sign in pairs(dap_icons) do
+      sign = type(sign) == 'table' and sign or { sign }
+      vim.fn.sign_define(
+        'Dap' .. name,
+        { text = sign[1], texthl = sign[2] or 'DiagnosticInfo', linehl = sign[3], numhl = sign[3] }
+      )
+    end
     -- Install golang specific config
     require('dap-go').setup()
   end,

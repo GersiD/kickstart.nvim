@@ -4,27 +4,6 @@
 return {
   'mfussenegger/nvim-jdtls', -- load jdtls on module
   ft = { 'java' },
-  -- init = function()
-  --   vim.api.nvim_create_autocmd('BufEnter', {
-  --     pattern = '*.java',
-  --     desc = 'Setup Java LSP',
-  --     callback = function()
-  --       local config = {
-  --         cmd = { 'jdtls' },
-  --         root_dir = require('jdtls.setup').find_root({ 'build.gradle.kts', '.git', '.gradle', 'gradle.properties' }),
-  --         -- enable CMP capabilities
-  --         capabilities = require('cmp_nvim_lsp').default_capabilities(),
-  --         project_name = function(root_dir)
-  --           return root_dir and vim.fs.basename(root_dir)
-  --         end,
-  --         -- These depend on nvim-dap, but can additionally be disabled by setting false here.
-  --         dap = { hotcodereplace = 'auto', config_overrides = {} },
-  --         test = true,
-  --       }
-  --       require('jdtls').start_or_attach(config)
-  --     end,
-  --   })
-  -- end,
   config = function()
     -- Find the extra bundles that should be passed on the jdtls command-line
     -- if nvim-dap is enabled with java debug/test.
