@@ -125,7 +125,8 @@ local servers = {
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
+  julials = {},
+  jdtls = {},
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -154,6 +155,9 @@ mason_lspconfig.setup({
 
 mason_lspconfig.setup_handlers({
   function(server_name)
+    if server_name == 'jdtls' then
+      return -- dont setup jdtls here
+    end
     require('lspconfig')[server_name].setup({
       capabilities = capabilities,
       on_attach = on_attach,
