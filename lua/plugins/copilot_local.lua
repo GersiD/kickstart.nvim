@@ -1,14 +1,14 @@
 return {
   {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
-    build = ":Copilot auth",
+    'zbirenbaum/copilot.lua',
+    cmd = 'Copilot',
+    event = 'InsertEnter',
+    build = ':Copilot auth',
     config = function()
-      require("copilot").setup({
+      require('copilot').setup({
         suggestion = {
           auto_trigger = true,
-          keymap = { accept = "<Right>" },
+          keymap = { accept = '<Right>' },
         },
         panel = {
           enabled = false,
