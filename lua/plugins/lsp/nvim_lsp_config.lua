@@ -62,6 +62,19 @@ return {
       print('AutoFormat = ' .. tostring(format_is_enabled))
     end, {})
 
+    -- Switch for controlling wheter you want diagnostics.
+    -- Use :KickstartDiagnosticsToggle to toggle diagnostics on or off
+    local diagnostics_are_enabled = true
+    vim.api.nvim_create_user_command('KickstartDiagnosticsToggle', function()
+      diagnostics_are_enabled = not diagnostics_are_enabled
+      if diagnostics_are_enabled then
+        vim.diagnostic.enable()
+      else
+        vim.diagnostic.disable()
+      end
+      print('Diagnostics = ' .. tostring(diagnostics_are_enabled))
+    end, {})
+
     -- Create an augroup that is used for managing our formatting autocmds.
     --      We need one augroup per client to make sure that multiple clients
     --      can attach to the same buffer without interfering with each other.

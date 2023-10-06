@@ -118,6 +118,7 @@ vim.keymap.set('n', 'gi', function()
   )
 end, { desc = 'LSP Implementations' })
 vim.keymap.set('n', '<leader>uf', '<CMD>KickstartFormatToggle<CR>', { desc = 'Format Toggle' })
+vim.keymap.set('n', '<leader>ud', '<CMD>KickstartDiagnosticsToggle<CR>', { desc = 'Diagnostic Toggle' })
 
 -- DAP Keymaps
 vim.keymap.set('n', '<F7>', function()
