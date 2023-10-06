@@ -1,6 +1,7 @@
 -- Java
 -- Utility function to extend or override a config table, similar to the way
 -- that Plugin.opts works.
+-- NOTE: jdtls version 1.27.1 is required for this to work.
 return {
   'mfussenegger/nvim-jdtls', -- load jdtls on module
   ft = { 'java' },
@@ -75,7 +76,7 @@ return {
             ['<leader>lx'] = { name = '+extract' },
             ['<leader>lxv'] = { require('jdtls').extract_variable_all, 'Extract Variable' },
             ['<leader>lxc'] = { require('jdtls').extract_constant, 'Extract Constant' },
-            ['gs'] = { require('jdtls').super_implementation, 'Goto Super' },
+            -- ['gs'] = { require('jdtls').extract_constant, 'Goto Super' },
             ['gS'] = { require('jdtls.tests').goto_subjects, 'Goto Subjects' },
             ['<leader>lo'] = { require('jdtls').organize_imports, 'Organize Imports' },
           }, { mode = 'n', buffer = args.buf })

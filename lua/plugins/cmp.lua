@@ -17,15 +17,13 @@ return {
         require('luasnip/loaders/from_vscode').lazy_load()
       end,
     },
-    'hrsh7th/cmp-emoji',
+    'chrisgrieser/cmp-nerdfont',
     'hrsh7th/cmp-nvim-lsp-signature-help',
-    'onsails/lspkind.nvim',
   },
   event = 'VeryLazy',
   opts = function(_)
     local cmp = require('cmp')
     local luasnip = require('luasnip')
-    local lspkind = require('lspkind')
     local has_words_before = function()
       local line, col = unpack(vim.api.nvim_win_get_cursor(0))
       return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
@@ -82,7 +80,7 @@ return {
     -- cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
     return {
       completion = {
-        completeopt = 'menu,menuone,preview,longest',
+        completeopt = 'menu,menuone,preview',
       },
       snippet = {
         expand = function(args)
@@ -101,24 +99,23 @@ return {
         ['<C-e>'] = cmp.mapping.abort(),
         ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
         ['<Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
+          if luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          elseif cmp.visible() then
             cmp.select_next_item()
             -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
             -- they way you will only jump inside the snippet region
-          elseif luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
           elseif has_words_before() then
             cmp.complete()
           else
             fallback()
           end
         end, { 'i', 's' }),
-
         ['<S-Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
+          if luasnip.jumpable(-1) then
             luasnip.jump(-1)
+          elseif cmp.visible() then
+            cmp.select_prev_item()
           else
             fallback()
           end
@@ -127,34 +124,30 @@ return {
       -- Only use buffer source if LSP is not available (e.g. inside a string context)
       sources = cmp.config.sources({
         { name = 'nvim_lsp', priority = 100 },
-        { name = 'luasnip',  priority = 90 },
-        { name = 'nvim_lua', priority = 80 },
-        { name = 'path',     priority = 70 },
-        { name = 'emoji' },
+        { name = 'nvim_lua', priority = 90 },
+        { name = 'luasnip', priority = 80 },
+        { name = 'path', priority = 70 },
+        { name = 'nerdfont', priority = 10 },
       }, {
         { name = 'buffer' },
       }),
+      experimental = {
+        ghost_text = false,
+      },
       formatting = {
-        fields = { 'kind', 'abbr', 'menu' },
+        ---@type cmp.ItemField[]
+        fields = { 'kind', 'abbr' },
         -- fields = { "abbr", "menu", "kind" },
         expandable_indicator = false,
         -- fields = { "abbr", "kind", "menu" },
-        format = function(entry, vim_item)
-          local kind = lspkind.cmp_format({
-            symbol_map = {
-              Snippet = '',
-              Keyword = '',
-            },
-            preset = 'codicons',
-            maxwidth = 50,
-          })(entry, vim_item)
-          local strings = vim.split(vim_item.kind, '%s+', { trimempty = true })
-          kind.kind = string.format('%s │', strings[1], strings[2])
-          return kind
+        format = function(_, vim_item)
+          local icons = require('config.icons').kinds
+          if icons[vim_item.kind] then
+            vim_item.menu = vim_item.kind
+            vim_item.kind = icons[vim_item.kind] .. ' │'
+          end
+          return vim_item
         end,
-      },
-      experimental = {
-        ghost_text = false,
       },
     }
   end,

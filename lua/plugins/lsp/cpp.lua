@@ -1,23 +1,58 @@
+-- Correctly setup lspconfig for clangd 🚀
 return {
-  "neovim/nvim-lspconfig",
+  'neovim/nvim-lspconfig',
   opts = {
-    setup = {
+    servers = {
+      -- Ensure mason installs the server
+      clangd = {
+        keys = {
+          { '<leader>cR', '<cmd>ClangdSwitchSourceHeader<cr>', desc = 'Switch Source/Header (C/C++)' },
+        },
+        root_dir = function(fname)
+          return require('lspconfig.util').root_pattern(
+            'Makefile',
+            'configure.ac',
+            'configure.in',
+            'config.h.in',
+            'meson.build',
+            'meson_options.txt',
+            'build.ninja'
+          )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(
+            fname
+          ) or require('lspconfig.util').find_git_ancestor(fname)
+        end,
+        capabilities = {
+          offsetEncoding = { 'utf-16' },
+        },
+        cmd = {
+          'clangd',
+          '--background-index',
+          '--clang-tidy',
+          '--header-insertion=iwyu',
+          '--completion-style=detailed',
+          '--function-arg-placeholders',
+          '--fallback-style=llvm',
+        },
+        init_options = {
+          usePlaceholders = true,
+          completeUnimported = true,
+          clangdFileStatus = true,
+        },
+      },
+    },
+    setup = { -- I have no idea what this does :/
       clangd = function(_, opts)
-        opts.capabilities.offsetEncoding = { "utf-16" }
-        vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-          pattern = { "*.cpp", "*.hpp" },
-          desc = "Setup C++ LSP",
-          callback = function()
-            vim.keymap.set("n", "<leader>`", function()
-              -- Save the current buffer
-              vim.cmd("w")
-              -- Read the compile_commands.json file in the current directory
-              local compile_commands = vim.fn.json_decode(vim.fn.readfile("compile_commands.json"))
-              local command = compile_commands and compile_commands[4]["run_command_custom"] or "make"
-              require("config.utils.terminals").run(command, { direction = "horizontal" })
-            end, { desc = "Computer Graphics" })
-          end,
-        })
+        -- local clangd_ext_opts = require('lazyvim.util').opts('clangd_extensions.nvim')
+        -- require('clangd_extensions').setup(vim.tbl_deep_extend('force', clangd_ext_opts or {}, { server = opts }))
+        vim.keymap.set('n', '<leader>`', function()
+          -- Save the current buffer
+          vim.cmd('w')
+          -- Read the compile_commands.json file in the current directory
+          local compile_commands = vim.fn.json_decode(vim.fn.readfile('compile_commands.json'))
+          local command = compile_commands and compile_commands[4]['run_command_custom'] or 'make'
+          require('config.utils.terminals').run(command, { direction = 'horizontal' })
+        end, { desc = 'Computer Graphics' })
+        return false
       end,
     },
   },

@@ -4,6 +4,8 @@ return {
     -- Automatically install LSPs to stdpath for neovim
     { 'williamboman/mason.nvim', opts = {} },
     { 'williamboman/mason-lspconfig.nvim', opts = {} },
+    { 'folke/neoconf.nvim', cmd = 'Neoconf', config = false, dependencies = { 'nvim-lspconfig' } },
+    { 'folke/neodev.nvim', opts = {} },
 
     -- Useful status updates for LSP
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -12,7 +14,46 @@ return {
     -- Additional lua configuration, makes nvim stuff amazing!
     'folke/neodev.nvim',
   },
-  config = function()
+  opts = {
+    -- LSP Server Settings
+    servers = {
+      lua_ls = {
+        -- mason = false, -- set to false if you don't want this server to be installed with mason
+        -- Use this to add any additional keymaps
+        -- for specific lsp servers
+        ---@type LazyKeys[]
+        -- keys = {},
+        settings = {
+          Lua = {
+            workspace = {
+              checkThirdParty = false,
+            },
+            completion = {
+              callSnippet = 'Replace',
+            },
+          },
+        },
+      },
+    },
+    setup = {},
+  },
+  config = function(_, opts)
+    vim.diagnostic.config({
+      virtual_text = false,
+      signs = true,
+      underline = true,
+      update_in_insert = false,
+      severity_sort = true,
+    })
+
+    -- Change the Diagnostic symbols
+    local signs = require('config.icons').diagnostics
+
+    for type, icon in pairs(signs) do
+      local hl = 'DiagnosticSign' .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    end
+
     -- Switch for controlling whether you want autoformatting.
     --  Use :KickstartFormatToggle to toggle autoformatting on or off
     local format_is_enabled = true
@@ -43,19 +84,32 @@ return {
       -- This is where we attach the autoformatting for reasonable clients
       callback = function(args)
         local client_id = args.data.client_id
-        local client = vim.lsp.get_client_by_id(client_id)
+        local client = vim.lsp.get_client_by_id(client_id) or {}
         local bufnr = args.buf
 
         -- Only attach to clients that support document formatting
         if not client.server_capabilities.documentFormattingProvider then
           return
         end
+        local function nmap(keys, func, desc)
+          if desc then
+            desc = 'LSP: ' .. desc
+          end
 
-        -- Tsserver usually works poorly. Sorry you work with bad languages
-        -- You can remove this line if you know what you're doing :)
-        if client.name == 'tsserver' then
-          return
+          vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
         end
+
+        nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
+        nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+        nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
+        -- Lesser used LSP functionality
+        nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+        nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
+        nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
+        nmap('<leader>wl', function()
+          print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+        end, '[W]orkspace [L]ist Folders')
 
         -- Create an autocmd that will run *before* we save the buffer.
         --  Run the formatting command for the LSP that has just attached.
@@ -69,72 +123,56 @@ return {
 
             vim.lsp.buf.format({
               async = false,
-              filter = function(c)
-                return c.id == client.id
-              end,
+              client_id = client_id,
             })
           end,
         })
       end,
     })
-    local lspconfig = require('lspconfig')
     local cmp_nvim_lsp = require('cmp_nvim_lsp')
     -- local navic = require("nvim-navic")
 
-    local on_attach = function(client, bufnr)
-      -- Navic
-      -- if client.server_capabilities.documentSymbolProvider then
-      --   navic.attach(client, bufnr)
-      -- end
-      if client.server_capabilities.inlayHintProvider then
-        vim.lsp.inlay_hint(bufnr, true)
+    local capabilities = vim.tbl_deep_extend(
+      'force',
+      vim.lsp.protocol.make_client_capabilities(),
+      cmp_nvim_lsp.default_capabilities(),
+      opts.capabilities or {}
+    )
+
+    -- CONFIGS
+    local servers = opts.servers or {}
+    local function setup(server)
+      local server_opts = vim.tbl_deep_extend('force', {
+        capabilities = vim.deepcopy(capabilities or {}),
+      }, servers[server] or {})
+
+      if opts.setup[server] then
+        if opts.setup[server](server, server_opts) then
+          return
+        end
+      elseif opts.setup['*'] then
+        if opts.setup['*'](server, server_opts) then
+          return
+        end
+      end
+      require('lspconfig')[server].setup(server_opts)
+    end
+
+    -- get all the servers that are available through mason-lspconfig
+    local all_mslp_servers = vim.tbl_keys(require('mason-lspconfig.mappings.server').lspconfig_to_package)
+    local ensure_installed = {} ---@type string[]
+    for server, server_opts in pairs(servers) do
+      if server_opts then
+        server_opts = server_opts == true and {} or server_opts
+        -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
+        if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
+          setup(server)
+        else
+          ensure_installed[#ensure_installed + 1] = server
+        end
       end
     end
 
-    local capabilities =
-      vim.tbl_deep_extend('force', vim.lsp.protocol.make_client_capabilities(), cmp_nvim_lsp.default_capabilities())
-
-    capabilities.offsetEncoding = { 'utf-16' }
-
-    vim.diagnostic.config({
-      virtual_text = false,
-      signs = true,
-      underline = true,
-      update_in_insert = false,
-      severity_sort = true,
-    })
-
-    -- Change the Diagnostic symbols
-    local signs = { Error = ' ', Warn = ' ', Hint = '🚥', Info = ' ', Question = ' ' }
-
-    for type, icon in pairs(signs) do
-      local hl = 'DiagnosticSign' .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-    end
-
-    -- CONFIGS
-    local all_lsp = {
-      -- 'cssls',
-      'html',
-      -- 'tsserver',
-      -- "tailwindcss",
-      -- 'vuels',
-      'eslint',
-      'pyright',
-      'emmet_ls',
-      'jsonls',
-      'vimls',
-    }
-    for _, lsp in ipairs(all_lsp) do
-      lspconfig[lsp].setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
-    end
-
-    lspconfig.clangd.setup({
-      on_attach = on_attach,
-      capabilities = vim.tbl_deep_extend('keep', { offsetEncoding = { 'utf-16', 'utf-8' } }, capabilities),
-    })
+    require('mason-lspconfig').setup({ ensure_installed = ensure_installed, handlers = { setup } })
   end,
 }

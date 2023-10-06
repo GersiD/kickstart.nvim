@@ -80,12 +80,12 @@ return {
               return msg
             end,
             -- icon = ' ',
-            color = Util.fg('LspInlayHint'),
+            color = Util.fg('LspInfoTitle'),
           },
         },
         lualine_z = {
           function()
-            return '' .. os.date('%R')
+            return ' ' .. os.date('%R')
           end,
         },
       },

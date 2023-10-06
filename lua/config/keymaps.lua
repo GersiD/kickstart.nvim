@@ -71,8 +71,9 @@ vim.keymap.set('n', '<leader>ld', vim.diagnostic.open_float, { desc = 'LSP Diag'
 -- vim.keymap.set("n", "<leader>lf", require("lazyvim.plugins.lsp.format").format, { desc = "LSP Format" })
 vim.keymap.set('n', '<leader>lr', vim.lsp.buf.rename, { desc = 'LSP Rename' })
 vim.keymap.set('n', '<leader>`', function()
-  local cmd = vim.fn.input('Run command: ')
-  require('config.utils.terminals').run(cmd)
+  vim.ui.input({ prompt = 'Run Command: ' }, function(cmd)
+    require('config.utils.terminals').run(cmd)
+  end)
 end, { desc = 'Run Command' })
 vim.keymap.set('n', 'gt', function()
   -- I want <CR> to open the selection in a vertical split
@@ -86,6 +87,28 @@ vim.keymap.set('n', 'gt', function()
     end,
   }))
 end, { desc = 'LSP Type Definitions' })
+vim.keymap.set('n', 'gd', function()
+  require('telescope.builtin').lsp_definitions(require('telescope.themes').get_cursor({
+    jump_type = 'vsplit',
+    reuse_win = true,
+    initial_mode = 'normal',
+    attach_mappings = function(_, map)
+      map('n', '<CR>', require('telescope.actions').select_vertical)
+      return true
+    end,
+  }))
+end, { desc = 'LSP Definitions' })
+vim.keymap.set('n', 'gs', function()
+  require('telescope.builtin').lsp_definitions(require('telescope.themes').get_cursor({
+    jump_type = 'vsplit',
+    reuse_win = false,
+    initial_mode = 'normal',
+    attach_mappings = function(_, map)
+      map('n', '<CR>', require('telescope.actions').select_vertical)
+      return true
+    end,
+  }))
+end, { desc = 'LSP Definitions Split' })
 vim.keymap.set('n', '<leader>fs', function()
   require('telescope.builtin').treesitter()
 end, { desc = 'Find Symbols' })
@@ -146,6 +169,19 @@ vim.keymap.set('n', '<C-s>', function()
   vim.notify('  ' .. cur_buf_name, 'info', { timeout = 500 })
   vim.cmd(':w')
 end, { desc = 'Save' })
+-- Fuzzy search all open buffers
+vim.keymap.set('n', '<leader>bf', function()
+  require('telescope.builtin').buffers({
+    ignore_current_buffer = true,
+    sort_mru = true,
+    attach_mappings = function(_, map)
+      map('n', 'dd', function(prompt_bufnr)
+        require('telescope.actions').delete_buffer(prompt_bufnr)
+      end)
+      return true
+    end,
+  })
+end, { desc = 'Find Buffer' })
 
 -- Window Keymaps
 -- Move to window using the <ctrl> hjkl keys
