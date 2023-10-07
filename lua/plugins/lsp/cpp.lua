@@ -1,13 +1,11 @@
 -- Correctly setup lspconfig for clangd 🚀
 return {
   'neovim/nvim-lspconfig',
+  dependencies = { 'p00f/clangd_extensions.nvim' },
   opts = {
     servers = {
       -- Ensure mason installs the server
       clangd = {
-        keys = {
-          { '<leader>cR', '<cmd>ClangdSwitchSourceHeader<cr>', desc = 'Switch Source/Header (C/C++)' },
-        },
         root_dir = function(fname)
           return require('lspconfig.util').root_pattern(
             'Makefile',
@@ -40,18 +38,33 @@ return {
         },
       },
     },
-    setup = { -- I have no idea what this does :/
+    setup = {
       clangd = function(_, opts)
-        -- local clangd_ext_opts = require('lazyvim.util').opts('clangd_extensions.nvim')
-        -- require('clangd_extensions').setup(vim.tbl_deep_extend('force', clangd_ext_opts or {}, { server = opts }))
-        vim.keymap.set('n', '<leader>`', function()
-          -- Save the current buffer
-          vim.cmd('w')
-          -- Read the compile_commands.json file in the current directory
-          local compile_commands = vim.fn.json_decode(vim.fn.readfile('compile_commands.json'))
-          local command = compile_commands and compile_commands[4]['run_command_custom'] or 'make'
-          require('config.utils.terminals').run(command, { direction = 'horizontal' })
-        end, { desc = 'Computer Graphics' })
+        vim.api.nvim_create_autocmd('FileType', {
+          desc = 'Setup CPP',
+          pattern = 'cpp',
+          once = true,
+          callback = function()
+            require('clangd_extensions').setup(vim.tbl_deep_extend('force', {}, { server = opts }))
+            require('clangd_extensions.inlay_hints').setup_autocmd()
+            require('clangd_extensions.inlay_hints').set_inlay_hints()
+            -- vim.notify('Setup clangd extension', 'info', { title = 'LSP' })
+            vim.keymap.set('n', '<leader>`', function()
+              -- Save the current buffer
+              vim.cmd('w')
+              -- Read the compile_commands.json file in the current directory
+              local compile_commands = vim.fn.json_decode(vim.fn.readfile('compile_commands.json'))
+              local command = compile_commands and compile_commands[4]['run_command_custom'] or 'make'
+              require('config.utils.terminals').run(command, { direction = 'horizontal' })
+            end, { desc = 'Computer Graphics' })
+            vim.keymap.set(
+              'n',
+              '<leader>lh',
+              '<CMD>ClangdSwitchSourceHeader<CR>',
+              { desc = 'Switch Source/Header (C/C++)' }
+            )
+          end,
+        })
         return false
       end,
     },
