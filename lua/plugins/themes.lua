@@ -1,13 +1,13 @@
 -- Themes
 return {
   {
-    "rose-pine/neovim",
+    'rose-pine/neovim',
     config = function()
-      require("rose-pine").setup({
+      require('rose-pine').setup({
         --- @usage 'auto'|'main'|'moon'|'dawn'
-        variant = "moon",
+        variant = 'moon',
         --- @usage 'main'|'moon'|'dawn'
-        dark_variant = "moon",
+        dark_variant = 'moon',
         disable_italics = true,
       })
     end,
@@ -17,7 +17,7 @@ return {
     'navarasu/onedark.nvim',
   },
   {
-    "rebelot/kanagawa.nvim",
+    'rebelot/kanagawa.nvim',
     opts = {
       compile = false, -- enable compiling the colorscheme
       undercurl = true, -- enable undercurls
@@ -34,19 +34,19 @@ return {
         palette = {},
         theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
       },
-      theme = "dragon", -- Load "wave" theme when 'background' option is not set
+      theme = 'dragon', -- Load "wave" theme when 'background' option is not set
       background = { -- map the value of 'background' option to a theme
-        dark = "wave", -- try "dragon" !
-        light = "lotus",
+        dark = 'wave', -- try "dragon" !
+        light = 'lotus',
       },
     },
   },
   {
-    "folke/tokyonight.nvim",
+    'folke/tokyonight.nvim',
     opts = {
       -- your configuration comes here
       -- or leave it empty to use the default settings
-      style = "storm", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
+      style = 'storm', -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
       -- terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
       -- no_italic = true, -- Disable italic comments, keywords, etc.
       -- transparent = true, -- Enable transparent background
@@ -78,11 +78,11 @@ return {
     },
   },
   {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    'catppuccin/nvim',
+    name = 'catppuccin',
     config = function()
-      require("catppuccin").setup({
-        flavour = "macchiato",
+      require('catppuccin').setup({
+        flavour = 'macchiato',
         no_italic = true,
         integrations = {
           notify = true,
@@ -99,15 +99,15 @@ return {
       })
     end,
   },
-  { "EdenEast/nightfox.nvim" },
-  { "sainnhe/everforest" },
-  { "sainnhe/gruvbox-material" },
-  { "sainnhe/edge" },
-  { "projekt0n/github-nvim-theme" },
+  { 'EdenEast/nightfox.nvim' },
+  { 'sainnhe/everforest' },
+  { 'sainnhe/gruvbox-material' },
+  { 'sainnhe/edge' },
+  { 'projekt0n/github-nvim-theme' },
   {
-    "AlexvZyl/nordic.nvim",
+    'AlexvZyl/nordic.nvim',
     opts = function()
-      local palette = require("nordic.colors")
+      local palette = require('nordic.colors')
       return {
         override = {
           TelescopePromptTitle = {
