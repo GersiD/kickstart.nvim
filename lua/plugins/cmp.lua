@@ -103,8 +103,6 @@ return {
             luasnip.expand_or_jump()
           elseif cmp.visible() then
             cmp.select_next_item()
-            -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
-            -- they way you will only jump inside the snippet region
           elseif has_words_before() then
             cmp.complete()
           else
@@ -123,11 +121,11 @@ return {
       }),
       -- Only use buffer source if LSP is not available (e.g. inside a string context)
       sources = cmp.config.sources({
-        { name = 'nvim_lsp', priority = 100 },
-        { name = 'nvim_lua', priority = 90 },
-        { name = 'luasnip', priority = 80 },
-        { name = 'path', priority = 70 },
-        { name = 'nerdfont', priority = 10 },
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lua' },
+        { name = 'luasnip' },
+        { name = 'path' },
+        { name = 'nerdfont' },
       }, {
         { name = 'buffer' },
       }),
@@ -136,19 +134,20 @@ return {
       },
       formatting = {
         ---@type cmp.ItemField[]
-        fields = { 'kind', 'abbr' },
+        fields = { 'kind', 'abbr', 'menu' },
         -- fields = { "abbr", "menu", "kind" },
         expandable_indicator = false,
         -- fields = { "abbr", "kind", "menu" },
         format = function(_, vim_item)
           local icons = require('config.icons').kinds
           if icons[vim_item.kind] then
-            vim_item.menu = vim_item.kind
+            -- vim_item.menu = vim_item.kind
             vim_item.kind = icons[vim_item.kind] .. ' │'
           end
           return vim_item
         end,
       },
+      sorting = require('cmp.config.default')().sorting,
     }
   end,
 }
