@@ -100,6 +100,12 @@ return {
         local client = vim.lsp.get_client_by_id(client_id) or {}
         local bufnr = args.buf
 
+        -- Enable inlay hints
+        local inlay_hint = vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint
+        if client.supports_method('textDocument/inlayHint') then
+          inlay_hint(bufnr, true)
+        end
+
         -- Only attach to clients that support document formatting
         if not client.server_capabilities.documentFormattingProvider then
           return
