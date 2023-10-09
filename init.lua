@@ -34,7 +34,7 @@ require('lazy').setup({
 -- Set Colorscheme
 -- See `:help colorscheme`
 vim.api.nvim_set_hl(0, 'MiniIndentscopeSymbol', { fg = '#FFFFFF' })
-vim.cmd.colorscheme('everforest')
+vim.cmd.colorscheme('gruvbox-material')
 require('config.keymaps')
 
 -- [[ Highlight on yank ]]
