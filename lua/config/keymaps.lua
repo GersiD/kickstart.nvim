@@ -165,9 +165,11 @@ vim.keymap.set('n', '<leader>bD', function()
     end
   end
 end, { desc = 'Delete all buf except current' })
-vim.keymap.set('n', '<C-s>', function()
+vim.keymap.set({ 'n', 'i' }, '<C-s>', function()
   local cur_buf_name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':~:.')
   vim.notify('  ' .. cur_buf_name, 'info', { timeout = 500 })
+  -- send esc key to exit from insert mode
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'n', true)
   vim.cmd(':w')
 end, { desc = 'Save' })
 -- Fuzzy search all open buffers
