@@ -138,6 +138,8 @@ return {
         -- fields = { "abbr", "menu", "kind" },
         expandable_indicator = false,
         -- fields = { "abbr", "kind", "menu" },
+        ---@param _ cmp.Entry
+        ---@param vim_item vim.CompletedItem
         format = function(_, vim_item)
           local icons = require('config.icons').kinds
           if icons[vim_item.kind] then
