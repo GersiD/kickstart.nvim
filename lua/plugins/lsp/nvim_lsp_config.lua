@@ -14,6 +14,7 @@ return {
     -- Additional lua configuration, makes nvim stuff amazing!
     'folke/neodev.nvim',
   },
+  event = 'BufReadPre',
   opts = {
     -- LSP Server Settings
     servers = {
@@ -103,7 +104,7 @@ return {
         -- Enable inlay hints
         local inlay_hint = vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint
         if client.supports_method('textDocument/inlayHint') then
-          inlay_hint(bufnr, true)
+          inlay_hint.enable(bufnr, true)
         end
 
         -- Only attach to clients that support document formatting
