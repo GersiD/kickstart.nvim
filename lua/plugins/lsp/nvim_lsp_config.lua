@@ -29,6 +29,10 @@ return {
             workspace = {
               checkThirdParty = false,
             },
+            -- → Lua.format.enable                   default: true
+            format = {
+              enable = false,
+            },
             completion = {
               callSnippet = 'Replace',
             },
@@ -137,14 +141,12 @@ return {
           group = get_augroup(client),
           buffer = bufnr,
           callback = function()
-            if not format_is_enabled then
-              return
+            if format_is_enabled then
+              vim.lsp.buf.format({
+                bufnr = bufnr,
+                client_id = client_id,
+              })
             end
-
-            vim.lsp.buf.format({
-              async = false,
-              client_id = client_id,
-            })
           end,
         })
       end,
