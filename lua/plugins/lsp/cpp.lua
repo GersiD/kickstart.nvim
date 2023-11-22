@@ -50,7 +50,7 @@ return {
               -- require('clangd_extensions.inlay_hints').setup_autocmd()
               -- require('clangd_extensions.inlay_hints').set_inlay_hints()
               -- vim.notify('Setup clangd extension', 'info', { title = 'LSP' })
-              vim.keymap.set('n', '<leader>`', function()
+              vim.keymap.set('n', '<leader><esc>', function()
                 -- Save the current buffer
                 vim.cmd('w')
                 -- Read the compile_commands.json file in the current directory

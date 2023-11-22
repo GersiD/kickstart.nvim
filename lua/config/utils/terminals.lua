@@ -69,7 +69,7 @@ function M.run(command, opts)
       vim.api.nvim_buf_set_keymap(
         term.bufnr,
         'n',
-        '<leader>`',
+        '<leader><esc>',
         "<cmd>lua require('config.utils.terminals').run(nil, nil)<cr>",
         { desc = 'Run last command', noremap = true, silent = true }
       )

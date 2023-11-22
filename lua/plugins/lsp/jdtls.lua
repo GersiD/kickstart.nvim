@@ -68,7 +68,7 @@ return {
       callback = function(args)
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         if client and client.name == 'jdtls' then
-          vim.keymap.set('n', '<leader>`', function()
+          vim.keymap.set('n', '<leader><esc>', function()
             require('config.utils.terminals').run('gradle test')
           end, { desc = 'Gradle Test' })
           local wk = require('which-key')

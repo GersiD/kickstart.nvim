@@ -21,7 +21,7 @@ vim.api.nvim_create_autocmd({ 'BufEnter' }, {
   pattern = '*.rs',
   desc = 'Setup Rust LSP',
   callback = function(ev)
-    vim.keymap.set('n', '<leader>`', function()
+    vim.keymap.set('n', '<leader><esc>', function()
       require('config.utils.terminals').run('time cargo run', { direction = 'horizontal' })
     end, { desc = 'Run Rust Proj' })
     vim.keymap.set('n', '<leader>lt', function()
