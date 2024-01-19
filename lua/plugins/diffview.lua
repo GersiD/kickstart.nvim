@@ -6,11 +6,11 @@ return {
       { 'n', 'q', '<cmd>DiffviewClose<CR>', { desc = 'Close Diffview' } },
       {
         'n',
-        '<leader>gs',
+        '<leader>ga',
         function()
           require('diffview.actions').toggle_stage_entry()
         end,
-        { desc = 'Toggle Stage file' },
+        { desc = 'Git Add: Toggle Stage file' },
       },
       {
         'n',
