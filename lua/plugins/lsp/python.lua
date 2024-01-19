@@ -7,16 +7,24 @@ vim.api.nvim_create_autocmd({ 'BufEnter' }, {
       -- require("null-ls").builtins.formatting.autopep8,
       -- require("null-ls").builtins.formatting.yapf,
     })
+    -- set TSHighlight true
+    vim.cmd('TSEnable highlight')
 
     -- Python Specific Keymaps
     -- run current file in terminal
     vim.keymap.set('n', '<leader><esc>', function()
+      -- Save current file
+      vim.cmd('w')
       if jit.os == 'Windows' then
         require('config.utils.terminals').run('python' .. ' ' .. vim.fn.expand('%'))
       else
         require('config.utils.terminals').run('time python3' .. ' ' .. vim.fn.expand('%'))
       end
     end, { desc = 'Run Python File' })
+
+    vim.keymap.set('n', '<leader>lt', function()
+      require('config.utils.terminals').run('pytest -v')
+    end, { desc = 'Run Python Tests' })
 
     local dap = require('dap')
     local python_command = 'python3'
@@ -34,7 +42,7 @@ vim.api.nvim_create_autocmd({ 'BufEnter' }, {
         type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
         request = 'launch',
         name = 'Launch file',
-        justMyCode = false,
+        justMyCode = true,
         -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
 
         program = '${file}', -- This configuration will launch the current file if used.
@@ -57,11 +65,10 @@ vim.api.nvim_create_autocmd({ 'BufEnter' }, {
 })
 
 return {
-  -- "numiras/semshi",
   'wookayin/semshi', -- use a maintained fork
   ft = 'python',
   build = ':UpdateRemotePlugins',
-  version = '*', -- Use the latest release
+  enabled = false,
   init = function()
     -- Disabled these features better provided by LSP or other more general plugins
     vim.g['semshi#error_sign'] = false
