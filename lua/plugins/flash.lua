@@ -1,11 +1,11 @@
 return {
-  "folke/flash.nvim",
+  'folke/flash.nvim',
   ---@type Flash.Config
   opts = {
     modes = {
       char = {
         enabled = false,
-        keys = { "t", "T", ";", "," },
+        keys = { 't', 'T', ';', ',' },
       },
     },
   },

@@ -5,6 +5,12 @@ return {
     'nvim-treesitter/nvim-treesitter-textobjects',
   },
   event = 'VeryLazy',
+  cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
+  keys = {
+    { '<c-\\>', desc = 'Increment selection' },
+    { '<bs>', desc = 'Decrement selection', mode = 'x' },
+  },
+  --@type TSConfig
   opts = {
     -- Add languages to be installed here that you want installed for treesitter
     ensure_installed = {
@@ -14,6 +20,10 @@ return {
       'go',
       'lua',
       'python',
+      'ninja',
+      'toml',
+      'jsonc',
+      'rst',
       'rust',
       'tsx',
       'javascript',
@@ -33,10 +43,10 @@ return {
     incremental_selection = {
       enable = true,
       keymaps = {
-        init_selection = '<c-space>',
-        node_incremental = '<c-space>',
-        scope_incremental = '<c-space>',
-        node_decremental = '<M-space>',
+        init_selection = '<c-\\>',
+        node_incremental = '<c-\\>',
+        scope_incremental = false,
+        node_decremental = '<bs>',
       },
     },
     textobjects = {
