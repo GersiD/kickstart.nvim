@@ -17,7 +17,16 @@ return {
     keymaps = {
       ['?'] = 'actions.show_help',
       ['q'] = 'actions.close',
-      ['<CR>'] = 'actions.select',
+      -- ['<CR>'] = 'actions.select_vsplit',
+      ['<CR>'] = function()
+        -- If the number of vsplits is 0, then open a new vsplit
+        if vim.fn.winnr('$') == 1 then
+          require('oil.actions').select_vsplit.callback()
+          require('oil').close()
+        else
+          require('oil.actions').select.callback()
+        end
+      end,
       ['<C-s>'] = false,
       ['v'] = 'actions.select_vsplit',
       ['h'] = 'actions.select_split',
